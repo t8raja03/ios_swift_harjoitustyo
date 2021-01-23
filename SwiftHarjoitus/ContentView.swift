@@ -9,6 +9,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State var elapsedSeconds = 0
+    
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        
+        HStack {
+            
+            Text("\(elapsedSeconds)")
+                .onReceive(timer) {_ in
+                    self.elapsedSeconds += 1
+                }
+            
+            
+        }
+    }
+    
+    /*
     @State private var selection = 0
  
     var body: some View {
@@ -32,7 +51,7 @@ struct ContentView: View {
                 }
                 .tag(1)
         }
-    }
+    }*/
 }
 
 struct ContentView_Previews: PreviewProvider {
