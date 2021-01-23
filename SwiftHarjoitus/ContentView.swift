@@ -18,12 +18,28 @@ func makeTime(seconds: Int) -> String {
 
 struct ContentView: View {
     
+    let state = UserDefaults.standard
+    
     @State var elapsedSeconds = 0
     @State var elapsedString = "Workday not started"
     
+    @State var startTime = Date()
+    //@State var endTime = Date()
+    @State var elapsedTime = 0
+    
     @State var running = false
     
-    let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    func loadPrevious() {
+        if self.state.bool(forKey: "was_running") == true {
+            self.running = self.state.bool(forKey: "was_running")
+            self.startTime = self.state.object(forKey: "start_time") as! Date
+        }
+        else {
+            self.startTime = Date()
+        }
+    }
     
     var body: some View {
         
@@ -34,8 +50,15 @@ struct ContentView: View {
             Text("\(elapsedString)")
                 .onReceive(timer) {_ in
                     if self.running {
-                        self.elapsedSeconds += 1
-                        self.elapsedString = makeTime(seconds: self.elapsedSeconds)
+                        //self.endTime = input
+                        //self.elapsedSeconds += 1
+                        self.loadPrevious()
+                        self.elapsedTime = Int(ceil(Date().timeIntervalSince(self.startTime)))
+                        self.elapsedString = "Workday so far:\n" + makeTime(seconds: self.elapsedTime)
+                    }
+                    else {
+                        self.loadPrevious()
+                        self.state.set(self.startTime, forKey: "start_time")
                     }
                     
                 }
@@ -44,7 +67,17 @@ struct ContentView: View {
             
             Button( action:
             {
-                self.running = !self.running
+                if !self.running {
+                    self.startTime = Date()
+                    self.running = true
+                    self.state.set(true, forKey: "was_running")
+                    self.elapsedTime = 0
+                }
+                else {
+                    self.running = false
+                    self.state.set(false, forKey: "was_running")
+                }
+                print("\(self.startTime)\n\(self.elapsedTime)")
             } )
             {
                 if !self.running {
