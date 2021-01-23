@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  SwiftHarjoitus
 //
-//  Created by Student on 23/01/2021.
+//  Created by Jarno Rankinen on 23/01/2021.
 //  Copyright © 2021 Rankinen Jarno TVT19KMO. All rights reserved.
 //
 
@@ -12,24 +12,50 @@ func makeTime(seconds: Int) -> String {
     let minutes: Int = (seconds - seconds % 60) / 60
     let hours: Int = (minutes - minutes % 60) / 60
     let seconds = seconds % 60
-    return "\(hours)h \(minutes)min \(seconds)s"
+    let printMinutes = minutes % 60
+    return "\(hours)h \(printMinutes)min \(seconds)s"
 }
 
 struct ContentView: View {
     
     @State var elapsedSeconds = 0
-    @State var elapsedString = "0s"
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
+    @State var elapsedString = "Workday not started"
+    
+    @State var running = false
+    
+    let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         
-        HStack {
+        VStack {
+            
+            Spacer()
             
             Text("\(elapsedString)")
                 .onReceive(timer) {_ in
-                    self.elapsedSeconds += 1
-                    self.elapsedString = makeTime(seconds: self.elapsedSeconds)
+                    if self.running {
+                        self.elapsedSeconds += 1
+                        self.elapsedString = makeTime(seconds: self.elapsedSeconds)
+                    }
+                    
                 }
+            
+            Spacer()
+            
+            Button( action:
+            {
+                self.running = !self.running
+            } )
+            {
+                if !self.running {
+                    Text( "Start workday" )
+                }
+                else {
+                    Text( "End workday" )
+                }
+            }
+            
+            Spacer()
             
             
         }
