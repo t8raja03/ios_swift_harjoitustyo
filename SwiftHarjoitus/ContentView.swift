@@ -8,19 +8,27 @@
 
 import SwiftUI
 
+func makeTime(seconds: Int) -> String {
+    let minutes: Int = (seconds - seconds % 60) / 60
+    let hours: Int = (minutes - minutes % 60) / 60
+    let seconds = seconds % 60
+    return "\(hours)h \(minutes)min \(seconds)s"
+}
+
 struct ContentView: View {
     
     @State var elapsedSeconds = 0
-    
+    @State var elapsedString = "0s"
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         
         HStack {
             
-            Text("\(elapsedSeconds)")
+            Text("\(elapsedString)")
                 .onReceive(timer) {_ in
                     self.elapsedSeconds += 1
+                    self.elapsedString = makeTime(seconds: self.elapsedSeconds)
                 }
             
             
