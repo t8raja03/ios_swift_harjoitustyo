@@ -64,19 +64,24 @@ struct ContentView: View {
                     
                     // If the workday has been started:
                     if self.running {
+                        
                         // Calculate the interval between now and startTime,
                         // round up and convert from the resulting double to Integer:
                         self.elapsedTime = Int(ceil(Date().timeIntervalSince(self.startTime)))
+                        
                         // Save the duration for showing the duration of previous workday:
                         self.state.set(self.elapsedTime, forKey: "last_elapsed")
+                        
                         // Update the time shown on screen:
                         self.elapsedString = "Workday so far:\n"
                             + makeTime(seconds: self.elapsedTime)
                     }
                     // If the workday has not been started:
                     else {
+                        
                         // Save the start time to UserDefaults:
                         self.state.set(self.startTime, forKey: "start_time")
+                        
                         // Show the previous workday duration:
                         self.elapsedString = "Workday not started.\nPrevious workday: "
                             + makeTime(seconds: self.elapsedTime)
